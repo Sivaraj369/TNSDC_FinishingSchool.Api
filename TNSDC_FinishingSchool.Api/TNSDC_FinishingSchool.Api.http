@@ -1,0 +1,6 @@
+@TNSDC_FinishingSchool.Api_HostAddress = http://localhost:5164
+
+GET {{TNSDC_FinishingSchool.Api_HostAddress}}/TrainerController/
+Accept: application/json
+
+###
