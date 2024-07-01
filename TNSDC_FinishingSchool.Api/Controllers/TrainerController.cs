@@ -9,6 +9,9 @@ using TNSDC_FinishingSchool.Bussiness.Common;
 using TNSDC_FinishingSchool.Bussiness.ApplicationConstants;
 using TNSDC_FinishingSchool.Domain.Model;
 using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
@@ -20,53 +23,21 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         private readonly ITrainerRepository _trainerRepository;
         protected APIResponse _response;
 
-        //List<Trainer> trainer = new List<Trainer>
-        //{
-        //    //new Trainer
-        //    //{
-        //    //    Id = 1,
-        //    //    FirstName = "John",
-        //    //    LastName = "Doe",
-        //    //    Email = "john.doe@example.com",
-        //    //    PhoneNumber = "+1234567890",
-        //    //    Gender = "Male",
-        //    //    DateOfBirth = new DateTime(1990, 5, 15),
-        //    //    AadharNumber = "123456789012",
-        //    //    PanCardNumber = "ABCDE1234F",
-        //    //    Qualification = "Bachelor's",
-        //    //    Specialization = "Computer Science"
-        //    //},
-        //    //new Trainer
-        //    //{
-        //    //    Id = 2,
-        //    //    FirstName = "Jane",
-        //    //    LastName = "Smith",
-        //    //    Email = "jane.smith@example.com",
-        //    //    PhoneNumber = "+1987654321",
-        //    //    Gender = "Female",
-        //    //    DateOfBirth = new DateTime(1985, 10, 25),
-        //    //    AadharNumber = "987654321098",
-        //    //    PanCardNumber = "PQRST5678G",
-        //    //    Qualification = "Master's",
-        //    //    Specialization = "Electrical Engineering"
-        //    //}
-
-        //};
-
-
+        
         public TrainerController(ITrainerRepository trainerRepository)
         {
             _trainerRepository = trainerRepository;
             _response = new APIResponse();
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         public async Task<ActionResult<APIResponse>> Get()
         {
             try
             {
                 var trainers = await _trainerRepository.GetAllAsync();
-              
+
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
                 _response.Result = trainers;
@@ -109,9 +80,8 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             return Ok(_response);
         }
 
-        //[ProducesResponseType(StatusCodes.Status200OK)]
         //[HttpPost]
-        //public async Task<ActionResult<APIResponse>> Create([FromBody] Trainer trainer)
+        //public async Task<IActionResult> CreateTrainer([FromBody] Trainer trainer)
         //{
         //    try
         //    {
@@ -123,24 +93,39 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         //            return Ok(_response);
         //        }
 
-        //        var entity = await _trainerRepository.CreateAsync(trainer);
+        //        var connectionString = _configuration.GetConnectionString("DefaultConnection");
+        //        using (var connection = new SqlConnection(connectionString))
+        //        {
+        //            await connection.OpenAsync();
 
-        //        _response.StatusCode = HttpStatusCode.Created;
-        //        _response.IsSuccess = true;
-        //        _response.DisplayMessage = CommonMessage.CreateOperationSuccess;
-        //        _response.Result = entity;
+        //            using (var command = new SqlCommand("spCreateTrainer", connection))
+        //            {
+        //                command.CommandType = CommandType.StoredProcedure;
+        //                command.Parameters.AddWithValue("@Name", trainer.Name);
+        //                command.Parameters.AddWithValue("@Age", trainer.Age);
+        //                command.Parameters.AddWithValue("@Specialty", trainer.Specialty);
+
+        //                var newTrainerId = (decimal)await command.ExecuteScalarAsync();
+
+        //                _response.StatusCode = HttpStatusCode.Created;
+        //                _response.IsSuccess = true;
+        //                _response.DisplayMessage = CommonMessage.CreateOperationSuccess;
+        //                _response.Result = new { TrainerId = newTrainerId };
+        //            }
+        //        }
         //    }
-        //    catch (Exception)
+        //    catch (Exception ex)
         //    {
         //        _response.StatusCode = HttpStatusCode.InternalServerError;
         //        _response.DisplayMessage = CommonMessage.CreateOperationFailed;
-        //        _response.AddError(CommonMessage.SystemError);
+        //        _response.AddError(ex.Message);
         //    }
 
         //    return Ok(_response);
         //}
 
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
         public async Task<ActionResult<APIResponse>> Create([FromBody] Trainer trainer)
         {
