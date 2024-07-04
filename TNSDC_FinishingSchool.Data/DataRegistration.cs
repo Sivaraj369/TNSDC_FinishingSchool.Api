@@ -14,7 +14,10 @@ namespace TNSDC_FinishingSchool.Data
         public static IServiceCollection AddDataServices(this IServiceCollection services)
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
             services.AddScoped<ITrainerRepository, TrainerRepository>();
+            services.AddScoped<ISectorRepository, SectorRepository>();
+            services.AddScoped<ILandingPageRepository, LandingPageRepository>();
 
             return services;
         }

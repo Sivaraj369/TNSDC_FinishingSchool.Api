@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TNSDC_FinishingSchool.Domain.Common;
 
-namespace TNSDC_FinishingSchool.Domain.Models
+namespace TNSDC_FinishingSchool.Bussiness.DTO.Trainer
 {
-    public class Trainer : BaseModel
+    public class CreateTrainerDto
     {
         [Required]
         [StringLength(50)]
@@ -40,12 +39,12 @@ namespace TNSDC_FinishingSchool.Domain.Models
         [Required]
         [StringLength(10, MinimumLength = 10)]
         public string PanCardNumber { get; set; }
-              
+
         [Required]
         public string Qualification { get; set; }
 
         [Required]
         public string Specialization { get; set; }
+
     }
 }
-

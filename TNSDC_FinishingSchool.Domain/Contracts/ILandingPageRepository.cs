@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using TNSDC_FinishingSchool.Domain.Models;
 
-
 namespace TNSDC_FinishingSchool.Domain.Contracts
 {
-    public interface ITrainerRepository : IGenericRepository<Trainer>
+    public interface ILandingPageRepository : IGenericRepository<LandingPage>
     {
-        Task UpdateAsync(Trainer trainer);
+        Task UpdateAsync(LandingPage landingPage);
     }
 }

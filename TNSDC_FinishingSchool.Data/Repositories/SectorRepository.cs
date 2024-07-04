@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,15 +9,15 @@ using TNSDC_FinishingSchool.Domain.Models;
 
 namespace TNSDC_FinishingSchool.Data.Repositories
 {
-    public class TrainerRepository : GenericRepository<Trainer>, ITrainerRepository
+    public class SectorRepository : GenericRepository<Sector>, ISectorRepository
     {
-        public TrainerRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public SectorRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
 
         }
-        public async Task UpdateAsync(Trainer trainer)
+        public async Task UpdateAsync(Sector sector)
         {
-            _dbContext.Update(trainer);
+            _dbContext.Update(sector);
             await _dbContext.SaveChangesAsync();
         }
     }

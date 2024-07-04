@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +10,15 @@ using TNSDC_FinishingSchool.Domain.Models;
 
 namespace TNSDC_FinishingSchool.Data.Repositories
 {
-    public class TrainerRepository : GenericRepository<Trainer>, ITrainerRepository
+    public class LandingPageRepository : GenericRepository<LandingPage>, ILandingPageRepository
     {
-        public TrainerRepository(ApplicationDbContext dbContext) : base(dbContext)
+        public LandingPageRepository(ApplicationDbContext dbContext) : base(dbContext)
         {
 
         }
-        public async Task UpdateAsync(Trainer trainer)
+        public async Task UpdateAsync(LandingPage landingPage)
         {
-            _dbContext.Update(trainer);
+            _dbContext.Update(landingPage);
             await _dbContext.SaveChangesAsync();
         }
     }

@@ -7,11 +7,13 @@ using System;
 using TNSDC_FinishingSchool.Domain.Contracts;
 using TNSDC_FinishingSchool.Bussiness.Common;
 using TNSDC_FinishingSchool.Bussiness.ApplicationConstants;
-using TNSDC_FinishingSchool.Domain.Model;
 using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+using TNSDC_FinishingSchool.Bussiness.Services.Interface;
+using TNSDC_FinishingSchool.Bussiness.DTO.Trainer;
+using System.Linq;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
@@ -20,13 +22,12 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
     public class TrainerController : ControllerBase
     {
-        private readonly ITrainerRepository _trainerRepository;
+        private readonly ITrainerService _trainerService;
         protected APIResponse _response;
 
-        
-        public TrainerController(ITrainerRepository trainerRepository)
+        public TrainerController(ITrainerService trainerService)
         {
-            _trainerRepository = trainerRepository;
+            _trainerService = trainerService;
             _response = new APIResponse();
         }
 
@@ -36,7 +37,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         {
             try
             {
-                var trainers = await _trainerRepository.GetAllAsync();
+                var trainers = await _trainerService.GetAllAsync();
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
@@ -51,6 +52,29 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             return Ok(_response);
         }
 
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("Test")]
+        public async Task<ActionResult<APIResponse>> GetSample()
+        {
+            try
+            {
+                var trainers = await _trainerService.GetAllAsync();
+                
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = trainers;
+            }
+            catch (Exception)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.AddError(CommonMessage.SystemError);
+            }
+
+            return Ok(_response);
+        }
+
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet]
         [Route("Details")]
@@ -58,7 +82,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         {
             try
             {
-                var trainer = await _trainerRepository.GetByIdAsync(p => p.Id == id);
+                var trainer = await _trainerService.GetByIdAsync(id);
 
                 if (trainer == null)
                 {
@@ -80,54 +104,10 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             return Ok(_response);
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateTrainer([FromBody] Trainer trainer)
-        //{
-        //    try
-        //    {
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _response.StatusCode = HttpStatusCode.BadRequest;
-        //            _response.DisplayMessage = CommonMessage.CreateOperationFailed;
-        //            _response.AddError(ModelState.ToString());
-        //            return Ok(_response);
-        //        }
-
-        //        var connectionString = _configuration.GetConnectionString("DefaultConnection");
-        //        using (var connection = new SqlConnection(connectionString))
-        //        {
-        //            await connection.OpenAsync();
-
-        //            using (var command = new SqlCommand("spCreateTrainer", connection))
-        //            {
-        //                command.CommandType = CommandType.StoredProcedure;
-        //                command.Parameters.AddWithValue("@Name", trainer.Name);
-        //                command.Parameters.AddWithValue("@Age", trainer.Age);
-        //                command.Parameters.AddWithValue("@Specialty", trainer.Specialty);
-
-        //                var newTrainerId = (decimal)await command.ExecuteScalarAsync();
-
-        //                _response.StatusCode = HttpStatusCode.Created;
-        //                _response.IsSuccess = true;
-        //                _response.DisplayMessage = CommonMessage.CreateOperationSuccess;
-        //                _response.Result = new { TrainerId = newTrainerId };
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _response.StatusCode = HttpStatusCode.InternalServerError;
-        //        _response.DisplayMessage = CommonMessage.CreateOperationFailed;
-        //        _response.AddError(ex.Message);
-        //    }
-
-        //    return Ok(_response);
-        //}
-
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost]
-        public async Task<ActionResult<APIResponse>> Create([FromBody] Trainer trainer)
+        public async Task<ActionResult<APIResponse>> Create([FromBody] CreateTrainerDto dto)
         {
             try
             {
@@ -139,7 +119,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     return Ok(_response);
                 }
 
-                var entity = await _trainerRepository.CreateAsync(trainer);
+                var entity = await _trainerService.CreateAsync(dto);
 
                 _response.StatusCode = HttpStatusCode.Created;
                 _response.IsSuccess = true;
@@ -159,7 +139,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPut]
-        public async Task<ActionResult<APIResponse>> Update([FromBody] Trainer trainer)
+        public async Task<ActionResult<APIResponse>> Update([FromBody] UpdateTrainerDto dto)
         {
             try
             {
@@ -171,16 +151,16 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     return Ok(_response);
                 }
 
-                var trainerResult = await _trainerRepository.GetByIdAsync(p => p.Id == trainer.Id);
+                var trainerResult = await _trainerService.GetByIdAsync(dto.Id);
 
-                if (trainer == null)
+                if (trainerResult == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
                     _response.DisplayMessage = CommonMessage.UpdateOperationFailed;
                     return Ok(_response);
                 }
 
-                await _trainerRepository.UpdateAsync(trainer);
+                await _trainerService.UpdateAsync(dto);
 
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;
@@ -209,7 +189,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     return Ok(_response);
                 }
 
-                var trainer = await _trainerRepository.GetByIdAsync(p => p.Id == id);
+                var trainer = await _trainerService.GetByIdAsync(id);
 
                 if (trainer == null)
                 {
@@ -218,7 +198,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     return Ok(_response);
                 }
 
-                await _trainerRepository.DeleteAsync(trainer);
+                await _trainerService.DeleteAsync(id);
 
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;

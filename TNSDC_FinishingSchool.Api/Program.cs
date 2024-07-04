@@ -6,11 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TNSDC_FinishingSchool.Data.DbContexts;
 using TNSDC_FinishingSchool.Data;
+using TNSDC_FinishingSchool.Bussiness;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddApplicationServices();
 
 builder.Services.AddDataServices();
 
@@ -42,11 +45,11 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 
 app.UseCors("CustomPolicy");

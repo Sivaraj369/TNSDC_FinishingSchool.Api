@@ -8,8 +8,8 @@ using TNSDC_FinishingSchool.Domain.Models;
 
 namespace TNSDC_FinishingSchool.Domain.Contracts
 {
-    public interface ITrainerRepository : IGenericRepository<Trainer>
+    public interface ISectorRepository : IGenericRepository<Sector>
     {
-        Task UpdateAsync(Trainer trainer);
+        Task UpdateAsync(Sector sector);
     }
 }

@@ -12,6 +12,5 @@ namespace TNSDC_FinishingSchool.Domain.Common
         [Key]
         public int Id { get; set; }
 
-        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
     }
 }

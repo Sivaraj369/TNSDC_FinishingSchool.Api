@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TNSDC_FinishingSchool.Bussiness\TNSDC_FinishingSchool.Bussiness.csproj" />
     <ProjectReference Include="..\TNSDC_FinishingSchool.Domain\TNSDC_FinishingSchool.Domain.csproj" />
   </ItemGroup>
 

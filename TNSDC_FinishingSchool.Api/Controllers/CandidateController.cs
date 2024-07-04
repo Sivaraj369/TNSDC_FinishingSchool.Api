@@ -11,8 +11,15 @@ using System.Collections.Generic;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using Newtonsoft.Json;
+using TNSDC_FinishingSchool.Bussiness.Services.Interface;
+using TNSDC_FinishingSchool.Bussiness.DTO.Trainer;
+using System.Linq;
+using TNSDC_FinishingSchool.Bussiness.Services.Implementations;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TNSDC_FinishingSchool.Domain.Models;
 
@@ -20,48 +27,19 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
-    public class TrainerCreationController : ControllerBase
+    public class CandidateController : ControllerBase
     {
         private readonly DbContext _dbContext;
         protected APIResponse _response;
 
-        public TrainerCreationController(DbContext dbContext)
+        public CandidateController(DbContext dbContext)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet]
-        public async Task<ActionResult<string>> GetTrainer(string queryparams)
-        {
-            string sql = @"EXEC sp_GetTrainer @queryParams, @jsonOutput OUTPUT";
-
-            SqlParameter queryparam = new SqlParameter("@queryParams", queryparams ?? DBNull.Value.ToString());
-            var jsonoutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-
-            try
-            {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { queryparam, jsonoutput });
-                var result = jsonoutput.Value.ToString();
-
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = result;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.AddError(ex.Message);
-            }
-
-            return Ok(_response);
-        }
-
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPost]
+        [HttpPost("candidatecreation")]
         public async Task<ActionResult<APIResponse>> Create([FromBody] Trainer trainer)
         {
             try
@@ -96,7 +74,9 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
             return Ok(_response);
         }
-
-
     }
 }
+
+
+
+
