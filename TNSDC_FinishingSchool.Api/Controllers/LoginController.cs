@@ -20,59 +20,36 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http.HttpResults;
+using TNSDC_FinishingSchool.Domain.Models;
+using TNSDC_FinishingSchool.Bussiness.JWT;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class SectionController : ControllerBase
+    public class LoginController : ControllerBase
     {
+
         private readonly DbContext _dbContext;
         protected APIResponse _response;
+        private readonly IJwtUtils _jwtUtils;
 
-        public SectionController(DbContext dbContext)
+        public LoginController(DbContext dbContext, IJwtUtils jwtUtils)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
+            _jwtUtils = jwtUtils;
         }
+
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getsections")]
-        public async Task<ActionResult<string>> GetSection()
+        [HttpPost("Login")]
+        public async Task<ActionResult<APIResponse>> Authenticate([FromBody] Login login)
         {
-            string sql = @"EXEC Usp_Sections_Get @jsonOutput OUTPUT";
 
-            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-
-            try
-            {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { jsonOutput });
-                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
-
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = result;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.AddError(ex.Message);
-            }
-
-            return Ok(_response);
+            string token = _jwtUtils.GenerateJwtToken("1");
+            return Ok(token);
         }
-
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

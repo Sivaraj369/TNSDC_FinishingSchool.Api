@@ -63,6 +63,34 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             return Ok(_response);
         }
 
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("getmastersincandidate")]
+        public async Task<ActionResult<string>> GetMastersInCandidate()
+        {
+            string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
+
+            SqlParameter inputType = new SqlParameter("@inputType", "candidatemasters");
+            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+
+            try
+            {
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { inputType, jsonOutput });
+                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = result;
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.AddError(ex.Message);
+            }
+
+            return Ok(_response);
+        }
+
     }
 }
 

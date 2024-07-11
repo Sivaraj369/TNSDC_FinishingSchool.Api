@@ -24,24 +24,25 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class CourseController : ControllerBase
+    public class CertificateController : ControllerBase
     {
         private readonly DbContext _dbContext;
         protected APIResponse _response;
 
-        public CourseController(DbContext dbContext)
+        public CertificateController(DbContext dbContext)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
         }
 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getcourse")]
-        public async Task<ActionResult<string>> GetCourse(string queryparams)
+        [HttpGet("getcertificate")]
+        public async Task<ActionResult<string>> GetCertificate(string queryparams)
         {
-            string sql = @"EXEC Usp_Course_Get @queryParams, @jsonOutput OUTPUT";
+            string sql = @"EXEC Usp_Certificates_Get @queryParams, @jsonOutput OUTPUT";
 
             SqlParameter queryparam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
             {
@@ -67,33 +68,25 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
             return Ok(_response);
         }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getcoursedetails")]
-        public async Task<ActionResult<string>> GetCourseDetails(string queryparams)
-        {
-            string sql = @"EXEC Usp_Course_Get_Details @queryParams, @jsonOutput OUTPUT";
-
-            SqlParameter queryparam = new SqlParameter("@queryParams", queryparams ?? DBNull.Value.ToString());
-            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-
-            try
-            {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { queryparam, jsonOutput });
-                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString())) ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString()) : "No records found";
-
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = result;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.AddError(ex.Message);
-            }
-
-            return Ok(_response);
-        }
-
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

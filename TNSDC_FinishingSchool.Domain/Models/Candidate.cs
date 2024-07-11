@@ -13,8 +13,18 @@ namespace TNSDC_FinishingSchool.Domain.Models
         public string Gender { get; set; }
         public string CandidateNameAsPerAadhar { get; set; }
         public string EmailId { get; set; }
-        public string ProfilePictureUrl { get; set; } // Optional if handling image URL
-        public string EducationalQualification { get; set; }
-        public string Community { get; set; }
+        public string ProfilePicture { get; set; }
+        public string EducationQualification { get; set; }
+        public string AcademicQualification { get; set; }
+        public string InstitutionBoard { get; set; }
+        public string PassedOutYear { get; set; }
+        public string Percentage { get; set; }
+        public string Community { get; set; } 
+        public string DifferentlyAbled { get; set; } 
+        public string Address { get; set; }
+        public string District { get; set; }
+        public string FamilyAnnualIncome { get; set; } 
+        public string Pincode { get; set; }
+
     }
 }

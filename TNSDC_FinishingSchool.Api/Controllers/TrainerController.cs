@@ -17,7 +17,8 @@ using System.Linq;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+     [Route("api/v1/[controller]")]
     [ApiController]
 
     public class TrainerController : ControllerBase
