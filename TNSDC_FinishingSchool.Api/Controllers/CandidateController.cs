@@ -24,6 +24,8 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using TNSDC_FinishingSchool.Domain.Models;
 using TNSDC_FinishingSchool.Bussiness.JWT;
 using Microsoft.AspNetCore.Authorization;
+using System.IO;
+using Microsoft.IdentityModel.Tokens;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
@@ -105,6 +107,11 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     _response.AddError(ModelState.ToString());
                     return Ok(_response);
                 }
+
+                //if (!string.IsNullOrEmpty(candidate.ProfilePicture.ToString()))
+                //{
+                //    candidate.ProfilePicture = Convert.FromBase64String(candidate.ProfilePicture.ToString());
+                //}
 
                 string trainerJson = JsonConvert.SerializeObject(candidate);
 
