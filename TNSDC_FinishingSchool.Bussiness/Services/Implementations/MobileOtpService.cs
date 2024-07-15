@@ -13,13 +13,13 @@ using TNSDC_FinishingSchool.Domain.Exceptions;
 
 namespace TNSDC_FinishingSchool.Bussiness.Services.Implementations
 {
-    public class AppUserService : IAppUserService
+    public class MobileOtpService : IMobileOtpService
     {
         private readonly SMSService _smsService;
         private readonly IConfiguration _configuration;
         private readonly IJwtUtils _jwtUtils;
 
-        public AppUserService(SMSService sms_Service, IConfiguration configuration, IJwtUtils jwtUtils)
+        public MobileOtpService(SMSService sms_Service, IConfiguration configuration, IJwtUtils jwtUtils)
         {
             _smsService = sms_Service;
             _configuration = configuration;

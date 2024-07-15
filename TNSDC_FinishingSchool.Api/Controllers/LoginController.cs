@@ -30,18 +30,18 @@ namespace TNSDC_FinishingSchool.Api.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private readonly IAppUserService _candidateService;
+        private readonly IMobileOtpService _mobileOtpService;
 
         private readonly DbContext _dbContext;
         protected APIResponse _response;
         private readonly IJwtUtils _jwtUtils;
 
-        public LoginController(DbContext dbContext, IJwtUtils jwtUtils,IAppUserService appUserService)
+        public LoginController(DbContext dbContext, IJwtUtils jwtUtils,IMobileOtpService mobileOtpService)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
             _jwtUtils = jwtUtils;
-            _candidateService = appUserService;
+            _mobileOtpService = mobileOtpService;
         }
 
 
@@ -62,7 +62,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             ObjectResult response = null;
             try
             {
-                var result = await _candidateService.GenerateSignupOTP(mobileNo);
+                var result = await _mobileOtpService.GenerateSignupOTP(mobileNo);
                 response = StatusCode((int)result.StatusCode, result);
                 return response;
 

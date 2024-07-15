@@ -22,7 +22,7 @@ namespace TNSDC_FinishingSchool.Data
             services.AddScoped<ITrainerRepository, TrainerRepository>();
             services.AddScoped<ISectorRepository, SectorRepository>();
             services.AddScoped<ILandingPageRepository, LandingPageRepository>();
-            services.AddScoped<IAppUserService, AppUserService>();
+            services.AddScoped<IMobileOtpService, MobileOtpService>();
             services.AddScoped<SMSService>();
             services.AddScoped<APIRequestHandler>();
 
