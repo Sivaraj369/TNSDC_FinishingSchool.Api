@@ -38,7 +38,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getcourse")]
+        [HttpGet("GetCourse")]
         public async Task<ActionResult<string>> GetCourse(string queryparams)
         {
             string sql = @"EXEC Usp_Course_Get @queryParams, @jsonOutput OUTPUT";
@@ -69,7 +69,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getcoursedetails")]
+        [HttpGet("GetCoursedetails")]
         public async Task<ActionResult<string>> GetCourseDetails(string queryparams)
         {
             string sql = @"EXEC Usp_Course_Get_Details @queryParams, @jsonOutput OUTPUT";

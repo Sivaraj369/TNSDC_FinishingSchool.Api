@@ -37,7 +37,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getsections")]
+        [HttpGet("GetSections")]
         public async Task<ActionResult<string>> GetSection()
         {
             string sql = @"EXEC Usp_Sections_Get @jsonOutput OUTPUT";

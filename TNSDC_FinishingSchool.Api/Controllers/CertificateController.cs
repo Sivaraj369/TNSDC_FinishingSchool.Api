@@ -39,7 +39,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getcertificate")]
+        [HttpGet("GetCertificate")]
         public async Task<ActionResult<string>> GetCertificate(string queryparams)
         {
             string sql = @"EXEC Usp_Certificates_Get @queryParams, @jsonOutput OUTPUT";

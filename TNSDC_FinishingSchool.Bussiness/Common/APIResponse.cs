@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace TNSDC_FinishingSchool.Bussiness.Common
 {
     public class APIResponse
-    {
+    {       
         public HttpStatusCode StatusCode { get; set; }
 
         public bool IsSuccess { get; set; } = false;
@@ -31,6 +31,46 @@ namespace TNSDC_FinishingSchool.Bussiness.Common
         {
             APIWarning warning = new APIWarning(description: warningMessage);
             Warnings.Add(warning);
+        }
+        public APIResponse ErrorResponse(string errorMsg)
+        {
+            return new APIResponse
+            {
+                Errors = {new APIError(errorMsg)},
+                DisplayMessage= APIErrorCodeMessages.FAILURE,
+                IsSuccess= false,
+                StatusCode=HttpStatusCode.BadRequest,
+            };
+        }
+        public APIResponse ErrorResponse(List<APIError> errors,HttpStatusCode statusCode)
+        {
+            return new APIResponse
+            {
+                Errors = errors,
+                DisplayMessage = APIErrorCodeMessages.FAILURE,
+                IsSuccess = false,
+                StatusCode = statusCode,
+            };
+        }
+        public APIResponse InternalErrorResponse(string errorMsg)
+        {
+            return new APIResponse
+            {
+                Errors = { new APIError(errorMsg) },
+                DisplayMessage = APIErrorCodeMessages.FAILURE,
+                IsSuccess = false,
+                StatusCode = HttpStatusCode.InternalServerError,
+            };
+        }
+        public APIResponse SucceesResponse(object result)
+        {
+            return new APIResponse
+            {
+                DisplayMessage = APIErrorCodeMessages.SUCCESS,
+                IsSuccess = true,
+                StatusCode = HttpStatusCode.OK,
+                Result= result
+            };
         }
     }
 }

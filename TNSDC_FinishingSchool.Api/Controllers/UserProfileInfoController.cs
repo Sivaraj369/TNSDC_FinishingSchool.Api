@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
-     [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class UserProfileInfoController : ControllerBase
     {
@@ -29,29 +29,23 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getuserprofileinfo")]
+        [HttpGet("GetUserProfileInfo")]
         public async Task<ActionResult<string>> GetUserProfileInfo(string queryparams)
         {
-            string userGetSessionKey = Request.Headers["userSessionKey"].ToString();
+            string sql = @"EXEC Usp_UserProfileInfo_Get @queryParams, @jsonOutput OUTPUT";
 
-            string sql = @"EXEC Usp_UserProfileInfo_Get @queryParams, @userGetSessionKey, @jsonOutput OUTPUT, @userSessionKey OUTPUT";
-
-            SqlParameter userGetSessionKeyParam = new SqlParameter("@userGetSessionKey", userGetSessionKey ?? DBNull.Value.ToString());
             SqlParameter queryparam = new SqlParameter("@queryParams", queryparams ?? DBNull.Value.ToString());
             var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-            var userSessionKey = new SqlParameter("@userSessionKey", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { userGetSessionKeyParam, queryparam, jsonOutput, userSessionKey });
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { queryparam, jsonOutput });
 
                 var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
                 _response.Result = result;
-
-                Response.Headers.Append("userSessionKey", userSessionKey.Value.ToString());
             }
             catch (Exception ex)
             {

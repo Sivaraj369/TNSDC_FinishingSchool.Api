@@ -37,7 +37,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getqualification")]
+        [HttpGet("GetQualification")]
         public async Task<ActionResult<string>> GetQualification()
         {
             string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
@@ -65,7 +65,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("getmastersincandidate")]
+        [HttpGet("GetMastersIncandidate")]
         public async Task<ActionResult<string>> GetMastersInCandidate()
         {
             string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";

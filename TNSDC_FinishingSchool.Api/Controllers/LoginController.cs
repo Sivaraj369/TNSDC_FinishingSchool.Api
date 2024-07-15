@@ -30,16 +30,18 @@ namespace TNSDC_FinishingSchool.Api.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private readonly IAppUserService _candidateService;
 
         private readonly DbContext _dbContext;
         protected APIResponse _response;
         private readonly IJwtUtils _jwtUtils;
 
-        public LoginController(DbContext dbContext, IJwtUtils jwtUtils)
+        public LoginController(DbContext dbContext, IJwtUtils jwtUtils,IAppUserService appUserService)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
             _jwtUtils = jwtUtils;
+            _candidateService = appUserService;
         }
 
 
@@ -51,5 +53,31 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             string token = _jwtUtils.GenerateJwtToken("1");
             return Ok(token);
         }
+
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpGet("GenerateSignupOTP")]
+        public async Task<ActionResult<string>> GenerateSignupOTP(long mobileNo)
+        {
+            ObjectResult response = null;
+            try
+            {
+                var result = await _candidateService.GenerateSignupOTP(mobileNo);
+                response = StatusCode((int)result.StatusCode, result);
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                response = StatusCode(StatusCodes.Status500InternalServerError, new GenericAPIResponse<string>()
+                    .InternalErrorResponse(ex.Message));
+                return response;
+            }
+            finally
+            {
+                //Log.Information($",Method: {Request.Method},Request : {Request.Path}, RequestBody: mobileNo={mobileNo}, Response : {JsonConvert.SerializeObject(response)}");
+            }
+        }
+
     }
 }

@@ -45,7 +45,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[HttpPost("candidateBasicDetails")]
+        //[HttpPost("CandidateBasicDetails")]
         //public async Task<ActionResult<APIResponse>> CandidateBasicDetails([FromBody] CandidateBasicDetails candidateBasicDetails)
         //{
         //    object result = "";
@@ -94,8 +94,8 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         //}
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPost("candidateCreation")]
-        public async Task<ActionResult<APIResponse>> CandidateCreation([FromBody] Candidate candidate)
+        [HttpPost("CandidateCreation")]
+        public async Task<ActionResult<APIResponse>> CandidateCreation1([FromBody] Candidate candidate)
         {
             object result = "";
             try
@@ -116,7 +116,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                 string trainerJson = JsonConvert.SerializeObject(candidate);
 
                 string sql = @"EXEC sp_InsertCandidateLogin @jsonInput, @jsonOutput OUTPUT";
-
+                 
                 var values = new SqlParameter("jsonInput", trainerJson);
                 var jsonOutput = new SqlParameter("jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
@@ -145,7 +145,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpPost("applyCourse")]
+        [HttpPost("ApplyCourse")]
         public async Task<ActionResult<APIResponse>> ApplyCourse([FromBody] ApplyCourse applyCourse)
         {
             object result = "";
