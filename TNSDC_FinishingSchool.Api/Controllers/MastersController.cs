@@ -20,35 +20,40 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using TNSDC_FinishingSchool.Domain.Models;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class MastersController : ControllerBase
+    public class MasterValuesController : ControllerBase
     {
         private readonly DbContext _dbContext;
         protected APIResponse _response;
 
-        public MastersController(DbContext dbContext)
+        public MasterValuesController(DbContext dbContext)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("GetQualification")]
-        public async Task<ActionResult<string>> GetQualification()
+        [ProducesResponseType(StatusCodes.Status200OK)]       
+        [HttpGet("GetMasterValues")]
+        public async Task<ActionResult<string>> GetMasters(string queryparams)
         {
-            string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
+            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT";
 
-            SqlParameter inputType = new SqlParameter("@inputType", "Qualification");
+            SqlParameter queryparam = new SqlParameter("@InputParamJSON", SqlDbType.NVarChar)
+            {
+                Size = -1,
+                Value = (object)queryparams ?? DBNull.Value
+            };
             var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { inputType, jsonOutput });
-                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { queryparam, jsonOutput });
+                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString())) ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString()) : "No records found";
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
@@ -62,39 +67,10 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
             return Ok(_response);
         }
-
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("GetMastersIncandidate")]
-        public async Task<ActionResult<string>> GetMastersInCandidate()
-        {
-            string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
-
-            SqlParameter inputType = new SqlParameter("@inputType", "candidatemasters");
-            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-
-            try
-            {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { inputType, jsonOutput });
-                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
-
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = result;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.AddError(ex.Message);
-            }
-
-            return Ok(_response);
-        }
-
     }
+
+
 }
-
-
 
 
 
