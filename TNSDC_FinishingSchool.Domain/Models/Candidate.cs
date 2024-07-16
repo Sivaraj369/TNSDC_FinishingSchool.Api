@@ -10,6 +10,7 @@ namespace TNSDC_FinishingSchool.Domain.Models
     public class Candidate
     {
         public string AadharNumber { get; set; }
+        public long PhoneNumber { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Gender { get; set; }
         public string CandidateNameAsPerAadhar { get; set; }

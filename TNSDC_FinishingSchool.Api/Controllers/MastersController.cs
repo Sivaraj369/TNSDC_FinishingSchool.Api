@@ -40,14 +40,21 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         [HttpGet("GetQualification")]
         public async Task<ActionResult<string>> GetQualification()
         {
-            string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
+            string queryParams = string.Empty;
+            string sql = @"EXEC Usp_Masters_Get @masterName, @queryParams, @jsonOutput OUTPUT";
 
-            SqlParameter inputType = new SqlParameter("@inputType", "Qualification");
+            SqlParameter queryParam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
+            {
+                Size = -1,
+                Value = (object)queryParams ?? DBNull.Value
+            };
+
+            SqlParameter masterName = new SqlParameter("@masterName", "Qualification");
             var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { inputType, jsonOutput });
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { masterName, queryParam, jsonOutput });
                 var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
 
                 _response.StatusCode = HttpStatusCode.OK;
@@ -68,14 +75,21 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         [HttpGet("GetMastersIncandidate")]
         public async Task<ActionResult<string>> GetMastersInCandidate()
         {
-            string sql = @"EXEC Usp_Masters_Get @inputType, @jsonOutput OUTPUT";
+            string queryParams = string.Empty;
+            string sql = @"EXEC Usp_Masters_Get @masterName, @queryParams, @jsonOutput OUTPUT";
 
-            SqlParameter inputType = new SqlParameter("@inputType", "candidatemasters");
+            SqlParameter queryParam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
+            {
+                Size = -1,
+                Value = (object)queryParams ?? DBNull.Value
+            };
+
+            SqlParameter masterName = new SqlParameter("@masterName", "candidatemasters");
             var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { inputType, jsonOutput });
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { masterName, queryParam, jsonOutput });
                 var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
 
                 _response.StatusCode = HttpStatusCode.OK;
