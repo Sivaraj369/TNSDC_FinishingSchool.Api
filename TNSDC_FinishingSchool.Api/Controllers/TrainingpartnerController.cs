@@ -40,7 +40,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         public TrainingpartnerController(DbContext dbContext, IJwtUtils jwtUtils)
         {
             _dbContext = dbContext;
-            _response = new APIResponse();
+            _response = new APIResponse(); 
             _jwtUtils = jwtUtils;
         }
 
