@@ -26,12 +26,12 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class MasterValuesController : ControllerBase
+    public class MastersController : ControllerBase
     {
         private readonly DbContext _dbContext;
         protected APIResponse _response;
 
-        public MasterValuesController(DbContext dbContext)
+        public MastersController(DbContext dbContext)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
