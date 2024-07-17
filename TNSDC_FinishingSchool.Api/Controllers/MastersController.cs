@@ -39,11 +39,11 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
         [ProducesResponseType(StatusCodes.Status200OK)]       
         [HttpGet("GetMasterValues")]
-        public async Task<ActionResult<string>> GetMasters(string queryparams)
+        public async Task<ActionResult<string>> GetCertificate(string queryparams)
         {
-            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT";
+            string sql = @"EXEC USP_GetMasterValues @queryParams, @jsonOutput OUTPUT";
 
-            SqlParameter queryparam = new SqlParameter("@InputParamJSON", SqlDbType.NVarChar)
+            SqlParameter queryparam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
             {
                 Size = -1,
                 Value = (object)queryparams ?? DBNull.Value

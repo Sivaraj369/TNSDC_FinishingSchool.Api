@@ -62,7 +62,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             }
             catch (Exception ex)
             {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.StatusCode = HttpStatusCode.InternalServerError;  
                 _response.AddError(ex.Message);
             }
 
