@@ -94,7 +94,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
 
-        [ProducesResponseType(StatusCodes.Status200OK)]       
+        [ProducesResponseType(StatusCodes.Status200OK)]        
         [HttpGet("GetMasterValues")]
         public async Task<ActionResult<string>> GetCertificate(string queryparams)
         {
