@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TNSDC_FinishingSchool.Domain.Models
 {
-    public class TrainerPartner
+    public class TrainingPartner
     {
         public string PartnerName { get; set; }
         public string PartnerType { get; set; }

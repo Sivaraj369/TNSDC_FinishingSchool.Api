@@ -20,6 +20,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using TNSDC_FinishingSchool.Domain.Models;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
@@ -36,26 +37,23 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             _response = new APIResponse();
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("GetQualification")]
-        public async Task<ActionResult<string>> GetQualification()
+        [ProducesResponseType(StatusCodes.Status200OK)]       
+        [HttpGet("GetMasterValues")]
+        public async Task<ActionResult<string>> GetCertificate(string queryparams)
         {
-            string queryParams = string.Empty;
-            string sql = @"EXEC Usp_Masters_Get @masterName, @queryParams, @jsonOutput OUTPUT";
+            string sql = @"EXEC USP_GetMasterValues @queryParams, @jsonOutput OUTPUT";
 
-            SqlParameter queryParam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
+            SqlParameter queryparam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
             {
                 Size = -1,
-                Value = (object)queryParams ?? DBNull.Value
+                Value = (object)queryparams ?? DBNull.Value
             };
-
-            SqlParameter masterName = new SqlParameter("@masterName", "Qualification");
             var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { masterName, queryParam, jsonOutput });
-                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { queryparam, jsonOutput });
+                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString())) ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString()) : "No records found";
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
@@ -69,46 +67,10 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 
             return Ok(_response);
         }
-
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("GetMastersIncandidate")]
-        public async Task<ActionResult<string>> GetMastersInCandidate()
-        {
-            string queryParams = string.Empty;
-            string sql = @"EXEC Usp_Masters_Get @masterName, @queryParams, @jsonOutput OUTPUT";
-
-            SqlParameter queryParam = new SqlParameter("@queryParams", SqlDbType.NVarChar)
-            {
-                Size = -1,
-                Value = (object)queryParams ?? DBNull.Value
-            };
-
-            SqlParameter masterName = new SqlParameter("@masterName", "candidatemasters");
-            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
-
-            try
-            {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { masterName, queryParam, jsonOutput });
-                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
-
-                _response.StatusCode = HttpStatusCode.OK;
-                _response.IsSuccess = true;
-                _response.Result = result;
-            }
-            catch (Exception ex)
-            {
-                _response.StatusCode = HttpStatusCode.InternalServerError;
-                _response.AddError(ex.Message);
-            }
-
-            return Ok(_response);
-        }
-
     }
+
+
 }
-
-
 
 
 
