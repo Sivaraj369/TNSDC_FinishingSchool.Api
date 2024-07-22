@@ -44,10 +44,10 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpPost("CreateBatch")]
-        public async Task<ActionResult<APIResponse>> CandidateCreation1([FromBody] Batch trainerpartner)
+        public async Task<ActionResult<APIResponse>> CreateBatch([FromBody] Batch batch)
         {
-            object result = "";
             try
             {
                 if (!ModelState.IsValid)
@@ -58,8 +58,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                     return Ok(_response);
                 }
 
-
-                string trainerJson = JsonConvert.SerializeObject(trainerpartner);
+                string trainerJson = JsonConvert.SerializeObject(batch);
 
                 string sql = @"EXEC Usp_BatchDetails @jsonInput, @jsonOutput OUTPUT";
 
@@ -67,51 +66,60 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                 var jsonOutput = new SqlParameter("jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
                 await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { values, jsonOutput });
-                result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
+                var result = JsonConvert.DeserializeObject<object>(jsonOutput.Value.ToString());
 
                 _response.StatusCode = HttpStatusCode.Created;
                 _response.IsSuccess = true;
                 _response.DisplayMessage = CommonMessage.CreateOperationSuccess;
                 _response.Result = result;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.DisplayMessage = CommonMessage.CreateOperationFailed;
-                _response.AddError(result.ToString());
+                _response.AddError(ex.Message);
+                _response.AddError(ex.StackTrace);
             }
 
             return Ok(_response);
         }
 
 
-
         [HttpGet("ViewBatch")]
         public async Task<ActionResult<APIResponse>> GetTrainingPartners()
         {
+            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT";
+            var inputParam = new SqlParameter("@InputParamJSON", SqlDbType.NVarChar)
             {
-                string sql = @"EXEC GetBatchDetails @jsonOutput OUTPUT";
+                Value = "ViewBatch"
+            };
 
-                var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1)
+            {
+                Direction = ParameterDirection.Output
+            };
 
-                try
-                {
-                    await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { jsonOutput });
+            try
+            {
 
-                    var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString())) ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString()) : "No records found";
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, inputParam, jsonOutput);
 
-                    _response.StatusCode = HttpStatusCode.OK;
-                    _response.IsSuccess = true;
-                    _response.Result = result;
-                }
-                catch (Exception ex)
-                {
-                    _response.StatusCode = HttpStatusCode.InternalServerError;
-                    _response.AddError(ex.Message);
-                }
+                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString()))
+                    ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString())
+                    : "No records found";
 
-                return Ok(_response);
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = result;
             }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.AddError(ex.Message);
+                _response.AddError(ex.StackTrace);
+            }
+
+            return Ok(_response);
         }
 
     }
