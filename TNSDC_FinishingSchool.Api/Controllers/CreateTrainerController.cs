@@ -28,7 +28,7 @@ using System.IO;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class CreateTrainerController : ControllerBase
     {

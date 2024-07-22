@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using TNSDC_FinishingSchool.Domain.Models;
@@ -56,31 +57,31 @@ namespace TNSDC_FinishingSchool.Bussiness.JWT
 
         //}
 
-        //public int? ValidateJwtToken(string Token)
-        //{
-        //    if(Token == null)
-        //        return null;
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var key=Encoding.ASCII.GetBytes(_appSettings.Secret);
-        //    try 
-        //    {
-        //        var tokenValidationParameters = new TokenValidationParameters
-        //        {
-        //            ValidateIssuerSigningKey = true,
-        //            IssuerSigningKey = new SymmetricSecurityKey(key),
-        //            ValidateAudience = false,
-        //            ValidateIssuer = false,
-        //            ClockSkew = TimeSpan.Zero
-        //        };
-        //        tokenHandler.ValidateToken(Token, tokenValidationParameters,out SecurityToken validatedToken);
-        //        var jwtToken = (JwtSecurityToken)validatedToken;
-        //        var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
-        //        return userId;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //}
+        public int? ValidateJwtToken(string Token)
+        {
+            if (Token == null)
+                return null;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_config.GetSection("JwtSettings")["Key"]?.ToString());
+            try
+            {
+                var tokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateAudience = false,
+                    ValidateIssuer = false,
+                    ClockSkew = TimeSpan.Zero
+                };
+                tokenHandler.ValidateToken(Token, tokenValidationParameters, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                return userId;
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

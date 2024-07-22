@@ -1,6 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -18,12 +22,14 @@ namespace TNSDC_FinishingSchool.Bussiness.Services.Implementations
         private readonly SMSService _smsService;
         private readonly IConfiguration _configuration;
         private readonly IJwtUtils _jwtUtils;
+        private readonly DbContext _dbContext;
 
-        public MobileOtpService(SMSService sms_Service, IConfiguration configuration, IJwtUtils jwtUtils)
+        public MobileOtpService(SMSService sms_Service, IConfiguration configuration, IJwtUtils jwtUtils, DbContext dbContext)
         {
             _smsService = sms_Service;
             _configuration = configuration;
             _jwtUtils = jwtUtils;
+            _dbContext = dbContext;
         }
 
         //public async Task<GenericAPIResponse<AuthResp>> AuthenticateUser(AuthReq req)
@@ -120,36 +126,38 @@ namespace TNSDC_FinishingSchool.Bussiness.Services.Implementations
             var response = new APIResponse();
             try
             {
-                //var user = await _appUserRepo.GetUserByMobileNumber(mobileNo);
-                //if (user != null)
-                //    throw new UserFriendlyException(APIErrorCodeMessages.USERALREADYEXIST);
+                //string sql = @"EXEC USP_MobileOtpVerfication @InputType, @MobileNo, @Otp, @jsonOutput OUTPUT";
+
+                //SqlParameter InputType = new SqlParameter("@InputType", "CHECK_MOBILENO");
+                //SqlParameter MobileNo = new SqlParameter("@MobileNo", mobileNo);
+                //SqlParameter Otp = new SqlParameter("@Otp", "");
+               
+                //var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+
+                //await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { InputType, MobileNo, Otp, jsonOutput });
+
+                //if (jsonOutput.Value.ToString() == "0")
+                //    throw new UserFriendlyException("Mobile no does not exists");
 
                 var randomOtp = CommonMethods.GenerateOtpText();
-                var smsBodyReplace = new Dictionary<string, string>(){{"@@RandomOTP", randomOtp}};
+                var smsBodyReplace = new Dictionary<string, string>() { { "@@RandomOTP", randomOtp } };
                 var resp = await _smsService.SendSms("Login_Otp_Content", "Login_Otp_TempId", mobileNo, smsBodyReplace);
-               
+
                 if (resp.StatusCode != HttpStatusCode.OK)
-                    return response.ErrorResponse(resp.Errors,resp.StatusCode);
+                    return response.ErrorResponse(resp.Errors, resp.StatusCode);
 
+               
+                string sql = @"EXEC USP_MobileOtpVerfication @InputType, @MobileNo, @Otp, @jsonOutput OUTPUT";
 
-                //var previousOtps = await _otpVerificationRepo.GetAllByAsync(x => x.MobileNo == mobileNo && x.IsDeleted == false
-                //&& x.IsVerified == false && x.ExpiresAt >= DateTime.Now);
-                //if (previousOtps.Count > 0)
-                //{
-                //    previousOtps.ForEach(x => x.IsDeleted = true);
-                //    await _otpVerificationRepo.UpdateRangeAsync(previousOtps);
-                //}
+                SqlParameter InputType = new SqlParameter("@InputType", "INSERT_OTP");
+                SqlParameter MobileNo = new SqlParameter("@MobileNo", mobileNo);
+                SqlParameter Otp = new SqlParameter("@Otp", randomOtp);
 
-                //await _otpVerificationRepo.AddAsync(new Otpverification
-                //{
-                //    VerificationModeId = 1,
-                //    MobileNo = mobileNo,
-                //    VerificationCode = Convert.ToInt32(randomOtp),
-                //    ExpiresAt = DateTime.Now.AddMinutes(Convert.ToInt32(_configuration.GetSection("OTPConfig")["Expiry"]?.ToString())),
-                //    IsVerified = false
-                //});
+                var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
 
-                return response.SucceesResponse("OTP Sent Successfully.");
+                var result = await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { InputType, MobileNo, Otp, jsonOutput });
+
+                return response.SuccessResponse("OTP Sent Successfully.");
             }
             catch (UserFriendlyException ex)
             {

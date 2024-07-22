@@ -62,7 +62,7 @@ namespace TNSDC_FinishingSchool.Bussiness.Common
                 StatusCode = HttpStatusCode.InternalServerError,
             };
         }
-        public APIResponse SucceesResponse(object result)
+        public APIResponse SuccessResponse(object result)
         {
             return new APIResponse
             {

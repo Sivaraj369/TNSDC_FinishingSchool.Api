@@ -10,6 +10,5 @@ namespace TNSDC_FinishingSchool.Domain.Models
     {
         public long MobileNumber { get; set; }
         public int Otp { get; set; }
-        public int OtpType { get; set; } = 1;
     }
 }

@@ -38,8 +38,8 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [HttpGet("GetCourse")]
-        public async Task<ActionResult<string>> GetCourse(string queryparams)
+        [HttpGet("GetAllCourse")]
+        public async Task<ActionResult<string>> GetAllCourse(string queryparams)
         {
             string sql = @"EXEC Usp_Course_Get @queryParams, @jsonOutput OUTPUT";
 

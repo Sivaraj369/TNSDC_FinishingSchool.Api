@@ -23,6 +23,8 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http.HttpResults;
 using TNSDC_FinishingSchool.Domain.Models;
 using TNSDC_FinishingSchool.Bussiness.JWT;
+using System.Configuration;
+using TNSDC_FinishingSchool.Domain.Exceptions;
 
 namespace TNSDC_FinishingSchool.Api.Controllers
 {
@@ -36,7 +38,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         protected APIResponse _response;
         private readonly IJwtUtils _jwtUtils;
 
-        public LoginController(DbContext dbContext, IJwtUtils jwtUtils,IMobileOtpService mobileOtpService)
+        public LoginController(DbContext dbContext, IJwtUtils jwtUtils, IMobileOtpService mobileOtpService)
         {
             _dbContext = dbContext;
             _response = new APIResponse();
@@ -49,7 +51,6 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         [HttpPost("Login")]
         public async Task<ActionResult<APIResponse>> Authenticate([FromBody] Login login)
         {
-
             string token = _jwtUtils.GenerateJwtToken("1");
             return Ok(token);
         }
@@ -77,6 +78,41 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             {
                 //Log.Information($",Method: {Request.Method},Request : {Request.Path}, RequestBody: mobileNo={mobileNo}, Response : {JsonConvert.SerializeObject(response)}");
             }
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [HttpPost("VerifyOtp")]
+        public async Task<ActionResult<string>> VerifyOtp(Login login)
+        {
+            try
+            {
+                string sql = @"EXEC USP_MobileOtpVerfication @InputType, @MobileNo, @Otp, @jsonOutput OUTPUT";
+
+                SqlParameter InputType = new SqlParameter("@InputType", "VERIFY_OTP");
+                SqlParameter MobileNo = new SqlParameter("@MobileNo", login.MobileNumber);
+                SqlParameter Otp = new SqlParameter("@Otp", login.Otp);
+
+                var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] { InputType, MobileNo, Otp, jsonOutput });
+
+                var result = System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString());
+
+                _response.StatusCode = HttpStatusCode.OK;
+                _response.IsSuccess = true;
+                _response.Result = result;
+
+            }
+            catch (Exception ex)
+            {
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.AddError(ex.Message);
+            }
+            finally
+            {
+                //Log.Information($",Method: {Request.Method},Request : {Request.Path}, RequestBody: mobileNo={mobileNo}, Response : {JsonConvert.SerializeObject(response)}");
+            }
+            return Ok(_response);
         }
 
     }

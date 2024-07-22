@@ -37,7 +37,6 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             _response = new APIResponse();
         }
 
-        [ProducesResponseType(StatusCodes.Status200OK)]
         [HttpGet("GetSectors")]
         public async Task<ActionResult<string>> GetSector(string queryparams)
         {
@@ -62,7 +61,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             }
             catch (Exception ex)
             {
-                _response.StatusCode = HttpStatusCode.InternalServerError;  
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.AddError(ex.Message);
             }
 

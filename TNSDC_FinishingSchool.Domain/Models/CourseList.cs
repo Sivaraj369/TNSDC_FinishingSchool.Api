@@ -24,7 +24,7 @@ namespace TNSDC_FinishingSchool.Domain.Models
         public string PlacementPartner { get; set; }
         public string ExpectedSalary { get; set; }
         public string JobOpportunities { get; set; }
-        public string CourseAvailableLocation { get; set; }
+        public List<string> CourseAvailableLocation { get; set; }
         public string CourseBannerImage { get; set; }
         public string OverviewImage { get; set; }
         public string UploadCourseVideo { get; set; }
