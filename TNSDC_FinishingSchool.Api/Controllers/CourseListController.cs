@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Data;
+using System.Data; 
 using System.Net;
 using System.Threading.Tasks;
 using System;
@@ -16,7 +16,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class CourseListController : ControllerBase
+    public class CourseListController : ControllerBase 
     {
         private readonly DbContext _dbContext;
         protected APIResponse _response;
@@ -75,15 +75,26 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         [HttpGet("ViewCourseList")]
         public  async Task<ActionResult<string>>  GetCourseList()
         {
-            string sql = @"EXEC Usp_GetCourseList @jsonOutput OUTPUT";
 
-            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1) { Direction = ParameterDirection.Output };
+            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT";
+            var inputParam = new SqlParameter("@InputParamJSON", SqlDbType.NVarChar)
+            {
+                Value = "ViewCourse"
+            };
+
+            var jsonOutput = new SqlParameter("@jsonOutput", SqlDbType.NVarChar, -1)
+            {
+                Direction = ParameterDirection.Output
+            };
 
             try
             {
-                await _dbContext.Database.ExecuteSqlRawAsync(sql, new[] {  jsonOutput });
 
-                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString())) ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString()) : "No records found";
+                await _dbContext.Database.ExecuteSqlRawAsync(sql, inputParam, jsonOutput);
+
+                var result = (jsonOutput.Value != DBNull.Value && !string.IsNullOrEmpty(jsonOutput.Value.ToString()))
+                    ? System.Text.Json.JsonSerializer.Deserialize<object>(jsonOutput.Value.ToString())
+                    : "No records found";
 
                 _response.StatusCode = HttpStatusCode.OK;
                 _response.IsSuccess = true;
@@ -93,6 +104,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
             {
                 _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.AddError(ex.Message);
+                _response.AddError(ex.StackTrace);
             }
 
             return Ok(_response);

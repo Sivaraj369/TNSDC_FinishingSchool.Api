@@ -11,9 +11,9 @@ namespace TNSDC_FinishingSchool.Domain.Models
         public string PartnerName { get; set; }
         public string PartnerType { get; set; }
         public DateTime DateOfRegistration { get; set; }
-        public string State { get; set; }
-        public string District { get; set; }
-        public string City { get; set; }
+        public int State { get; set; }
+        public int District { get; set; }
+        public int City { get; set; }
         public string PinCode { get; set; }
         public string ContactNo { get; set; }
         public string Email { get; set; }

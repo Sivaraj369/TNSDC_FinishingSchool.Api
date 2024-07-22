@@ -30,17 +30,17 @@ namespace TNSDC_FinishingSchool.Domain.Models
 
         public string Qualification { get; set; }
 
-        public string Specialization { get; set; }
+        public string TrainerSpecialization { get; set; }
 
         public int Experience { get; set; }
 
         public string Certification { get; set; }
 
-        public string State { get; set; }
+        public int State { get; set; }
 
-        public string District { get; set; }
+        public int District { get; set; }
 
-        public string City { get; set; }
+        public int City { get; set; }
 
       
         public string PinCode { get; set; }
