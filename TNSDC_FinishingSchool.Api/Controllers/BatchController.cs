@@ -88,7 +88,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
         [HttpGet("ViewBatch")]
         public async Task<ActionResult<APIResponse>> GetTrainingPartners()
         {
-            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT";
+            string sql = @"EXEC USP_GetMasterValues @InputParamJSON, @jsonOutput OUTPUT  ";
             var inputParam = new SqlParameter("@InputParamJSON", SqlDbType.NVarChar)
             {
                 Value = "ViewBatch"
