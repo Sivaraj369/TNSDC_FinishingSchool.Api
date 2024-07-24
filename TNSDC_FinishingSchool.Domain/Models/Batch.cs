@@ -9,7 +9,7 @@ namespace TNSDC_FinishingSchool.Domain.Models
     public class Batch
     {
 
-        public string BatchId { get; set; } 
+     
         public string Course { get; set; }
         public string CourseMode { get; set; }
         public string Target { get; set; }
