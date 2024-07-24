@@ -127,7 +127,7 @@ namespace TNSDC_FinishingSchool.Api.Controllers
                 var candidateId = parsedJson.RootElement.GetProperty("CandidateID").GetInt32();
 
                 string token = _jwtUtils.GenerateJwtToken(candidateId.ToString());
-
+                 
                 _response.StatusCode = HttpStatusCode.Created;
                 _response.IsSuccess = true;
                 _response.DisplayMessage = CommonMessage.CreateOperationSuccess;
